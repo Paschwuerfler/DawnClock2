@@ -1,0 +1,43 @@
+{
+	"folders": [
+		{
+			"path": "..\\..\\DawnClock"
+		},
+		{
+			"name": "DawnClock2",
+			"path": ".."
+		}
+	],
+	"settings": {
+		"MicroPython.executeButton": [
+			{
+				"text": "▶",
+				"tooltip": "Run",
+				"alignment": "left",
+				"command": "extension.executeFile",
+				"priority": 3.5
+			}
+		],
+		"MicroPython.syncButton": [
+			{
+				"text": "$(sync)",
+				"tooltip": "sync",
+				"alignment": "left",
+				"command": "extension.execute",
+				"priority": 4
+			}
+		],
+		"files.associations": {
+			"random": "cpp",
+			"array": "c",
+			"deque": "c",
+			"list": "c",
+			"string": "c",
+			"unordered_map": "c",
+			"vector": "c",
+			"string_view": "c",
+			"initializer_list": "c",
+			"ranges": "c"
+		}
+	}
+}
