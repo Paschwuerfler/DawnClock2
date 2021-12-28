@@ -1,6 +1,25 @@
 
 #include <Arduino.h>
 
+//The RTC module uses standard I2C pins 
+
+//CHANGE THEESE VALUES IF YOU USE THE CODE 
+#define LightPin D8         //PIN FOR PWM dimmed LED 
+#define AlarmSwitch A0      //PIN FOR A SWITCH TO ACTIVATE THE ALARM (has to be pulled up for activation)
+#define maxPWM 70           //I use a pwm-controlled-current led driver so this is important 
+#define WAKESPEED 1.2       //Formula: pwmvalue = pow(secondssincealarm / 50, WAKESPEED); (1.2 for about 10 minutes of wakeup)) 
+
+#define dayStart 6                //For dimming end 
+#define dayEnd 22                 //For dimming start 
+#define DisplayBrightnessDay 255  //Brightness of the display during day
+#define DisplayBrightnessNight 50 //Brightness of the display during night
+
+
+//For TM1637
+const byte PIN_CLK = D3;  // define CLK pin (any digital pin)
+const byte PIN_DIO = D0;  // define DIO pin (any digital pin)
+
+
 enum MODE {
     DTIME,
     DSETALARMHOURS,  //Both used by getTime
@@ -30,9 +49,7 @@ unsigned char lightvalue = 0;
 
 int timeSinceAlarm = 0;
 
-#define LightPin D8  //Boot fails if pulled high....
-#define AlarmSwitch A0
-#define maxPWM 70
+
 char lastSwitchState = 0;
 
 /*
@@ -76,8 +93,7 @@ IRAM_ATTR void checkPosition() {
 /////////////////////////////DISPLAY SETUP////////////////////////////////////
 #include "SevenSegmentTM1637.h"  //https://github.com/bremme/arduino-tm1637
 
-const byte PIN_CLK = D3;  // define CLK pin (any digital pin)
-const byte PIN_DIO = D0;  // define DIO pin (any digital pin)
+
 SevenSegmentTM1637 display(PIN_CLK, PIN_DIO);
 
 void PrintTime(int hours, int minutes) {
@@ -574,7 +590,7 @@ void loop() {
         int diff = millis() - timeSinceAlarm;
         ////Here ould be a buzzer implementation
         float seconds = diff / 1000.0;
-        float value = pow(seconds / 50, 1.5);
+        float value = pow(seconds / 50, WAKESPEED);
 
         Serial.print("Value: ");
         Serial.println(value);
@@ -601,10 +617,10 @@ void loop() {
     /////DISPAY DIMMING at night/////////////////////
     if (lightState == LIGHT_OFF) {
         bool alarmDy, alarmH12Flag, alarmPmFlag;
-        if (myclock.getHour(alarmH12Flag, alarmPmFlag) > 22 || myclock.getHour(alarmH12Flag, alarmPmFlag) < 6) {
-            display.setBacklight(50);
+        if (myclock.getHour(alarmH12Flag, alarmPmFlag) > dayEnd || myclock.getHour(alarmH12Flag, alarmPmFlag) < dayStart) {
+            display.setBacklight(DisplayBrightnessNight);
         } else {
-            display.setBacklight(255);
+            display.setBacklight(DisplayBrightnessDay);
         }
     }
 
