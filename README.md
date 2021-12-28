@@ -11,3 +11,4 @@ This is my biggest microcontroller coding project ever, interfacing with a lot o
 
 I tried to use Interupts to set flags that were then processed in the main code as a general coding scheme, which makes for extremely responsive code with little nesting, i would assume that it also wouldnt disrupt wifi to badly
 
+The code was developed with PlatformIO for VSCode for NodeMCU 0.9 with DS3231 (RTC) and a TM1637, Rotary Encoder, an Arming Switch, and a PWM-Dimmable led, it would be easy to add a buzzer. 
