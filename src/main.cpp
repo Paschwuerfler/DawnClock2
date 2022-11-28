@@ -19,6 +19,10 @@
 const byte PIN_CLK = D3;  // define CLK pin (any digital pin)
 const byte PIN_DIO = D0;  // define DIO pin (any digital pin)
 
+long lastCursor = 0; 
+byte cursorState = 1; 
+const int BLINK_RATE = 500; 
+
 
 enum MODE {
     DTIME,
@@ -105,6 +109,7 @@ void PrintTime(int hours, int minutes) {
     buffer[3] = display.encode(int16_t(minutes % 10));
 
     display.printRaw(buffer, 4, 0);
+    display.setColonOn(cursorState); 
 }
 
 ///////////////////////DS3231 SETUP/////////////////////////////////////////
@@ -431,6 +436,8 @@ void setup() {
     display.setBacklight(100);  // set the brightness to 100 %
     display.print("INIT");      // display INIT on the display
 
+    display.setColonOn(true); 
+
     delay(1000);
 
     Serial.println("Button");
@@ -610,6 +617,16 @@ void loop() {
         Serial.println(lightvalue);
     }
 
+    /////////////Blink the Cursor////////////////
+    if((millis() - lastCursor) > BLINK_RATE) {
+        if(cursorState == 0) {
+            cursorState = 1; 
+        } else {
+            cursorState = 0; 
+        }
+        lastCursor = millis();
+    }
+
     oldmillis = millis();
     delay(50);
 
@@ -623,6 +640,9 @@ void loop() {
             display.setBacklight(DisplayBrightnessDay);
         }
     }
+
+
+
 
     /* ///Encoder Stuff
   position: encoder->getPosition();
